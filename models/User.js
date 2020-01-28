@@ -22,6 +22,15 @@ let userSchema = mongoose.Schema({
         required: true
     },
 
+    image_link: String,
+
+    role:{
+        //'user', 'admin'
+        type: String, 
+        enum: ['admin', 'user'],
+        required: true
+    },
+    //role: { type: String, enum: ['admin', 'restricted'], required: true },
     phoneNum: {
         type: String, 
         required: true

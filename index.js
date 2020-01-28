@@ -35,7 +35,9 @@ app.use(passport.session())
 app.use(require('./routes/register'))
 app.use(require('./routes/login'))
 app.use(require('./routes/home'))
+app.use(require('./routes/logout'))
 app.use(require('./routes/api/product'))
+app.use(require('./routes/api/user'))
 
 const PORT = process.env.PORT || 3000 
 

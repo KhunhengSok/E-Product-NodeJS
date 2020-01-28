@@ -19,10 +19,11 @@ router.post('/login',
     }),
     async (req, res)=>{
         // res.send(`hello world.`)
-        res.send(`Hi, ${await req.user.username}`)
+        res.send(await req.user)
     }
 )
 
+const checkAuthentication = 
 module.exports = router;
 
 

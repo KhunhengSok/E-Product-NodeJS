@@ -2,8 +2,11 @@ const mongoose = require('mongoose')
 
 let orderSchema = mongoose.Schema({
     order_id: Date,
-    order_datetime: Date,
-    order_datetime: Date,
+    order_datetime: {
+        type: Date,
+        default: Date.now
+    },
+    // invoice_datetime: Date,
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: `user`
