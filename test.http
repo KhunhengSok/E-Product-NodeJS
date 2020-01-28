@@ -1,0 +1,7 @@
+GET https://localhost:3000/register
+content-type: application/json
+
+{
+    "username": "khunheng",
+    "password": "password"
+}
