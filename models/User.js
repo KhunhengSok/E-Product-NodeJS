@@ -28,7 +28,8 @@ let userSchema = mongoose.Schema({
         //'user', 'admin'
         type: String, 
         enum: ['admin', 'user'],
-        required: true
+        required: true,
+        default: 'user'
     },
     //role: { type: String, enum: ['admin', 'restricted'], required: true },
     phoneNum: {
@@ -65,5 +66,7 @@ userSchema.statics.findById =  async function (id, callback) {
     }
     return await query.exec()
 }
+
+//TODO: get hashedpassword by email function 
 
 module.exports = mongoose.model("User", userSchema, "Users" )

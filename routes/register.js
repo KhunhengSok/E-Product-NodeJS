@@ -4,6 +4,17 @@ const User = require('../models/User')
 
 
 router.post('/register', async (req, res)=>{
+/*
+    options:
+        - username: required,
+        - password: required,
+        - email: required,
+        - phoneNum: required
+        - sex: optional,
+        - address: optional,
+
+*/
+    
     try{
         let {username, email, password, address, phoneNum} = req.body;
         let hashedPassword = await bcryptjs.hash(password, 10)
@@ -23,16 +34,23 @@ router.post('/register', async (req, res)=>{
         console.log(params)
         let user = new User(params)
         
-        await user.save()
+        try{
+            await user.save()
+        }catch(e){
+            res.status(400).send(e)
+        }
         console.log('create')
         console.log(user)
 
         // res.status(200).redirect('/login')
-        res.status(200).redirect('/login')
+        res.status(200).json(user)
     }catch(e){
         console.log(e)
+        res.status(400).json(e)
+        
+
         // res.send()
-        res.status(501).redirect('/register')
+        // res.status(501).redirect('/register')
     }
 })
 

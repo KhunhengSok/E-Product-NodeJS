@@ -102,6 +102,8 @@ router.post('/api/products/', async (req, res)=>{
     }
 })
 
-
+let checkIfAdmin = (req, res, next)=>{
+    
+}
 
 module.exports = router 

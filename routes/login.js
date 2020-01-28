@@ -1,30 +1,50 @@
 const router =  require('express').Router()
 const passport = require('passport')
+const jwt = require('jsonwebtoken')
+const tokenAuthenticate = require('../middlewares/tokenAuthenticate')
 
-router.get('/login', async(req, res)=>{
-    // res.send(`Login ${await Object.keys(req.user) }`)
-    // let password = await req.user.toObject().passport
-    // res.send(`login: ${ password}`)
+if(process.env.NODE_ENV !== 'production'){
+    require('dotenv').config()
+} 
 
-    //return the user if they're login else return null
-    res.send(await req.user)
+router.get('/login',tokenAuthenticate,  async(req, res)=>{
+    let user = await req.user
+    delete user.password
+    res.send(user)
 
 })
 
-router.post('/login',
-    passport.authenticate('local', {
-        // failureRedirect: '/login',
-        // successRedirect: '/',
-        // failureFlash: true
-    }),
-    async (req, res)=>{
-        // res.send(`hello world.`)
-        res.send(await req.user)
-    }
-)
 
-const checkAuthentication = 
+
+
+router.post('/login',  (req, res, next)=>{
+    passport.authenticate('local', {session:false}, (err, user, info)=>{
+        if(err){
+            return next(err)
+        }
+        if(!user){
+            return res.status(400).json({
+                message: 'Something is not right',
+                user   : user
+            });
+        }
+        req.login(user, {session:false}, (err)=>{
+            if(err){
+                res.send(err)
+            }
+
+            console.log(user)
+            const token = jwt.sign({user}, process.env.SECRET_KEY, {expiresIn: '1h'})
+            res.json({
+                user, 
+                token
+            })
+        })
+        
+    })(req, res, next)
+}, (req, res)=>{
+    res.send('done')
+})
+
+// const checkAuthentication = 
 module.exports = router;
-
-
-
