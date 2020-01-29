@@ -2,3 +2,4 @@
 node_modules/
 e-product-db.json
 test.http
+scriptData.js

@@ -1,23 +1,64 @@
 const router =  require('express').Router()
 const Product = require('./../../models/Product')
 
+
+router.get('/api/products/latest', async (req, res)=>{
+    /*
+        options: 
+            - limit: Number, (optional)
+            - offset: Number, (optional)
+            - category: String, (optional)
+
+        ================
+        examples:
+        {
+            - limit: 10,
+            - offset: 20,
+            - category: "Speaker",
+        }
+    */
+
+    //TODO:
+    let query = Product.find().sort({'released_date': -1 })
+
+    let {limit, offset, category } = req.body
+
+    if(typeof limit === 'number'){
+        query = query.limit(limit)
+    }
+
+    if(typeof offset === 'number'){
+        query = query.skip(offset)
+    }
+
+    if(typeof category !== 'undefined'){
+        query = query.where('category').equals(new RegExp(category, 'i'))
+    }
+
+    let result = await query.exec()
+    res.json(result)
+
+})
+
 router.get('/api/products' , async (req, res) =>{
    
     /*
         options: 
             - limit:
+            - offset:
             - category:
             - product_name: //TODO: find by name
             - price:
             - price_range: 
                 + lower_bound
                 + upper_bound
-            - sort_order : ASC | DESC
+            - sort_order : 'ASC | DESC' (optional, sort by name)
 
         ==================
         examples:
         {
             limit: 10,
+            offset: 20,
             category: phone,
             product_name: IPhone 11, 
             price_range: {
@@ -26,7 +67,7 @@ router.get('/api/products' , async (req, res) =>{
             }
         }
     */
-    let {limit, category, product_name,price_range, sort_order, price} = req.body
+    let {limit, category, product_name,price_range, sort_order, price, offset} = req.body
     // let lower_bound, upper_bound;
     
  
@@ -70,6 +111,9 @@ router.get('/api/products' , async (req, res) =>{
         q = q.limit(limit)
     }
 
+    if(typeof offset === 'number'){
+        q = q.skip(parseInt(Number))
+    }
 
     //exclude _id and __v field from object
     q.select('-_id -__v')

@@ -53,7 +53,6 @@ router.get('/api/order', tokenAuthenticate, async  (req,res)=>{
         let result = await orders.exec()
         res.json(result)
     }
-    res.send()
 })
 
 router.post('/api/order', tokenAuthenticate, async (req,res)=>{
