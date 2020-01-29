@@ -7,4 +7,4 @@ router.delete('/logout', async (req, res)=>{
     res.send(await req.user)
 })
 
-module.exports = router ;
+module.exports =  router ;

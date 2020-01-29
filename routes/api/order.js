@@ -150,10 +150,8 @@ router.post('/api/order', tokenAuthenticate, async (req,res)=>{
     let order = new Order(params)
     try{
         await order.save()
-        console.log('save')
-        res.send('return')
+        res.send(order)
     }catch(err){
-        // console.log(e)
         res.json(err)
     }
 

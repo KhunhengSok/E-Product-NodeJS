@@ -1,10 +1,10 @@
 const router = require('express').Router()
 const bcryptjs = require('bcryptjs')
-const User = require('../models/User')
+const User = require('../../models/User')
 const Validator = require('validator')
 
 
-//router.post('/register', async (req, res)=>{
+//router.post('/api/register', async (req, res)=>{
 /*
     options:
         - username: required,
@@ -54,7 +54,7 @@ const Validator = require('validator')
 */
 
 
-router.get('/register', (req, res)=>{
+router.get('/api/register', (req, res)=>{
     let jsons = []
     user.find().then( users =>{
         console.log('result')
@@ -71,7 +71,7 @@ router.get('/register', (req, res)=>{
     
 })
 
-router.post('/register', async(req, res)=> {
+router.post('/api/register', async(req, res)=> {
     /*
         options:
             - username: required,
@@ -167,16 +167,16 @@ function validateRegisterInput(data) {
         errors.email = 'Email is required';
     }
 
-    if(!Validator.isLength(data.password, {min: 6, max: 30})) {
-        errors.password = 'Password must have 6 chars';
+    if(!Validator.isLength(data.password, {min: 8, max: 30})) {
+        errors.password = 'Password must have 8 chars';
     }
 
     if(Validator.isEmpty(data.password)) {
         errors.password = 'Password is required';
     }
 
-    if(!Validator.isLength(data.password_confirm, {min: 6, max: 30})) {
-        errors.password_confirm = 'Password must have 6 chars';
+    if(!Validator.isLength(data.password_confirm, {min: 8, max: 30})) {
+        errors.password_confirm = 'Password must have 8 chars';
     }
 
     if(!Validator.equals(data.password, data.password_confirm)) {
@@ -201,7 +201,6 @@ function validateRegisterInput(data) {
         isValid: isEmpty(errors)
     }
 }
-
 
 
 const isEmpty = (value) => {
