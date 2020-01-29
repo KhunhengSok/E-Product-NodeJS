@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 let orderSchema = mongoose.Schema({
-    order_id: Date,
+    // order_id: String,
     order_datetime: {
         type: Date,
         default: Date.now
@@ -14,8 +14,9 @@ let orderSchema = mongoose.Schema({
 
     products:[
         {
-            products: {
-                type: String, 
+            product_id: {
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'products',
                 required: true
             },
             price: {
@@ -28,6 +29,7 @@ let orderSchema = mongoose.Schema({
             }
         }
     ],
+
     delivery_status: {
         type: Boolean,
         default: false 

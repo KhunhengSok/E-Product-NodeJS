@@ -2,11 +2,12 @@ const router =  require('express').Router()
 const Product = require('./../../models/Product')
 
 router.get('/api/products' , async (req, res) =>{
+   
     /*
         options: 
             - limit:
             - category:
-            - product_name:
+            - product_name: //TODO: find by name
             - price:
             - price_range: 
                 + lower_bound
@@ -28,8 +29,7 @@ router.get('/api/products' , async (req, res) =>{
     let {limit, category, product_name,price_range, sort_order, price} = req.body
     // let lower_bound, upper_bound;
     
-    
-
+ 
     let q = null; 
 
     if(product_name !== 'undefined'){

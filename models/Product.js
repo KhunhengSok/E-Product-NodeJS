@@ -36,7 +36,11 @@ let productSchema = mongoose.Schema({
         required: true
     },
 
-    category: String,
+    category: {
+        type: String, 
+        required: true
+    },
+    
     released_date: Date,
     description: String, 
     supplier: String, 

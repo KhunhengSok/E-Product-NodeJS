@@ -5,11 +5,10 @@ if(process.env.NODE_ENV !== 'production'){
 
 const tokenAuthenticate = (req, res, next)=>{
     //Get Token from header
-    const token =  req.header('x-auth-token');
+    const token =  req.header('authentication');
     if(typeof token !== 'undefined'){
         try{
             let result = jwt.verify(token, process.env.SECRET_KEY)
-            console.log(result)
             req.user = result.user 
             return next()
 

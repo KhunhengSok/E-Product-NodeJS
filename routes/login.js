@@ -33,8 +33,8 @@ router.post('/login',  (req, res, next)=>{
                 res.send(err)
             }
 
-            console.log(user)
-            const token = jwt.sign({user}, process.env.SECRET_KEY, {expiresIn: '1h'})
+            // console.log(user)
+            const token = jwt.sign({user}, process.env.SECRET_KEY, {expiresIn: process.env.EXPIRED_TIME})
             res.json({
                 user, 
                 token
