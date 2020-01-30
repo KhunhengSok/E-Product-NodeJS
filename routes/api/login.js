@@ -8,12 +8,12 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 } 
 
-router.get('/api/login',tokenAuthenticate,  async(req, res)=>{
-    let user = await req.user
-    delete user.password
-    res.send(user)
+// router.get('/api/login', tokenAuthenticate,  async(req, res)=>{
+//     let user = await req.user
+//     delete user.password
+//     res.send(user)
 
-})
+// })
 
 
 router.post('/api/login',  (req, res, next)=>{

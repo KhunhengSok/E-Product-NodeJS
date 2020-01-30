@@ -37,6 +37,7 @@ app.use(require('./routes/api/logout'))
 app.use(require('./routes/api/product'))
 app.use(require('./routes/api/order'))
 app.use(require('./routes/api/register'))
+app.use(require('./routes/api/me'))
 
 const PORT = process.env.PORT || 3000 
 

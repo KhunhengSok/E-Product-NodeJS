@@ -71,10 +71,10 @@ router.get('/api/products' , async (req, res) =>{
     // let lower_bound, upper_bound;
     
  
-    let q = null; 
+    let q = Product.find(); 
 
     if(product_name !== 'undefined'){
-        q = Product.where('name').equals(new RegExp(product_name, 'i'))
+        q = q.where('name').equals(new RegExp(product_name, 'i'))
     }
     if( category !== 'undefined'){
         q = q.where('category').equals(category)
