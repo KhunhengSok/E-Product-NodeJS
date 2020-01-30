@@ -2,7 +2,7 @@ const router = require('express').Router()
 const bcryptjs = require('bcryptjs')
 const User = require('../../models/User')
 const Validator = require('validator')
-
+const tokenValidate = require('./../../middlewares/tokenAuthenticate')
 
 //router.post('/api/register', async (req, res)=>{
 /*
@@ -54,24 +54,27 @@ const Validator = require('validator')
 */
 
 
-router.get('/api/register', (req, res)=>{
-    let jsons = []
-    user.find().then( users =>{
-        console.log('result')
-        for(let user of users){
-            let i = {}
-            i.username = user.username
-            i.email = user.email
-            i.address = user.address
-            i.phoneNum = user.phoneNum
-            jsons.push(i)
-        }
-        res.json(JSON.stringify(jsons))
-    })
-    
-})
 
-router.post('/api/register', async(req, res)=> {
+// router.get('/api/register', (req, res)=>{
+//     let jsons = []
+//     user.find().then( users =>{
+//         console.log('result')
+//         for(let user of users){
+//             let i = {}
+//             i.username = user.username
+//             i.email = user.email
+//             i.address = user.address
+//             i.phoneNum = user.phoneNum
+//             jsons.push(i)
+//         }
+//         res.json(JSON.stringify(jsons))
+//     })
+    
+// })
+
+
+//TODO: 
+router.post('/api/register', tokenValidate, async(req, res)=> {
     /*
         options:
             - username: required,
@@ -84,14 +87,28 @@ router.post('/api/register', async(req, res)=> {
             - image_link: String (optional),
             
     */
-    const { errors, isValid } = validateRegisterInput(req.body);
+    let user = req.user 
+
+    console.log(`login as ${req.user.role}`)
+    if((typeof user === 'undefined') || user.role === 'user' ){
+        registerUser(req.body, req, res)
+    }else if(user.role === 'admin'){
+       registerAdmin(req.body, req, res)
+    }
+   
+});
+
+let registerUser = (data, req, res) =>{
+    console.log('create user')
+    const { errors, isValid } = validateUserRegisterInput(req.body);
+    
 
     if(!isValid) {
         return res.status(400).json(errors);
     }
 
     User.findOne({
-        email: req.body.email
+        email: data.email
     }).then( async (user) => {
         if(user) {
             return res.status(400).json({
@@ -103,13 +120,13 @@ router.post('/api/register', async(req, res)=> {
             let hashedPassword = await bcryptjs.hash(req.body.password, 10)
 
             let params = {
-                username: req.body.username,
-                email: req.body.email,
+                username: data.username,
+                email: data.email,
                 password: hashedPassword,
-                phoneNum: req.body.phoneNum
+                phoneNum: data.phoneNum
             }
             
-            let {sex, address, image_link} = req.body
+            let {sex, address, image_link} = data
 
             if(typeof sex === "string" ){
                 if(sex.startsWith('F')){
@@ -140,10 +157,72 @@ router.post('/api/register', async(req, res)=> {
             }
         }
     });
-});
+}
+
+let registerAdmin = (data, req, res) => {
+    console.log('create admin')
+
+    // let {username, email, password, password_confirm} = data
+    let {errors, isValid} = validateAdminRegisterInput(data);
+
+    if(!isValid) {
+        return res.status(400).json(errors);
+    }
+
+    User.findOne({
+        email: req.body.email
+    }).then( async (user) => {
+        if(user) {
+            return res.status(400).json({
+                email: 'Email already exists'
+            });
+        }
+        else {
+            let hashedPassword = await bcryptjs.hash(req.body.password, 10)
+
+            let params = {
+                username: req.body.username,
+                email: req.body.email,
+                password: hashedPassword,
+                role: 'admin',
+                phoneNum: "000 000 000"
+            }
+            
+            let {sex, address, image_link} = req.body
+
+            if(typeof sex === "string" ){
+                if(sex.startsWith('F')){
+                    sex = "Female"
+                }else if (sex.startsWith('M')){
+                    sex = "Male"
+                }
+                params.sex = sex 
+            }
+
+            if(typeof address === "string"){
+                params.address = address
+            }
+
+            if(typeof image_link === "string"){
+                params.image_link = image_link
+            }
+
+            const newUser = new User(params);
+            console.log(params)
+            
+            try{
+                await newUser.save()
+                res.json({admin: newUser})
+            }catch(e){
+                console.log(e)
+                res.status(400).json({error: e})
+            }
+        }
+    });
+}
 
 
-function validateRegisterInput(data) {
+function validateUserRegisterInput(data) {
     let errors = {};
     data.username = !isEmpty(data.username) ? data.username : '';
     data.email = !isEmpty(data.email) ? data.email : '';
@@ -196,6 +275,58 @@ function validateRegisterInput(data) {
         errors.phoneNum = "Please enter a proper phone number"
     }
 
+    return {
+        errors,
+        isValid: isEmpty(errors)
+    }
+}
+
+
+function validateAdminRegisterInput(data) {
+    let errors = {};
+    data.username = !isEmpty(data.username) ? data.username : '';
+    data.email = !isEmpty(data.email) ? data.email : '';
+    data.password = !isEmpty(data.password) ? data.password : '';
+    data.password_confirm = !isEmpty(data.password_confirm) ? data.password_confirm : '';
+    data.phoneNum = !isEmpty(data.phoneNum) ? data.phoneNum : ''
+
+    if(!Validator.isLength(data.username, { min: 2, max: 30 })) {
+        errors.username = 'username must be between 2 to 30 chars';
+    }
+    
+    if(Validator.isEmpty(data.username)) {
+        errors.username = 'username field is required';
+    }
+
+    if(!Validator.isEmail(data.email)) {
+        errors.email = 'Email is invalid';
+    }
+
+    if(Validator.isEmpty(data.email)) {
+        errors.email = 'Email is required';
+    }
+
+    if(!Validator.isLength(data.password, {min: 8, max: 30})) {
+        errors.password = 'Password must have 8 chars';
+    }
+
+    if(Validator.isEmpty(data.password)) {
+        errors.password = 'Password is required';
+    }
+
+    if(!Validator.isLength(data.password_confirm, {min: 8, max: 30})) {
+        errors.password_confirm = 'Password must have 8 chars';
+    }
+
+    if(!Validator.equals(data.password, data.password_confirm)) {
+        errors.password_confirm = 'Password and Confirm Password must match';
+    }
+
+    if(Validator.isEmpty(data.password_confirm)) {
+        errors.password_confirm = 'Password is required';
+    }
+
+    
     return {
         errors,
         isValid: isEmpty(errors)

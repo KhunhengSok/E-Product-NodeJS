@@ -18,7 +18,6 @@ router.get('/api/products/latest', async (req, res)=>{
         }
     */
 
-    //TODO:
     let query = Product.find().sort({'released_date': -1 })
 
     let {limit, offset, category } = req.body
@@ -83,7 +82,6 @@ router.get('/api/products' , async (req, res) =>{
     //extract lower and upper bound of price if it's defined
     if(typeof price_range != 'undefined'){
         let {lower_bound, upper_bound } = price_range
-        console.log(upper_bound)
 
         if(typeof price !== 'undefined' ) {
             q = q.where('price').equals(price)
@@ -138,10 +136,8 @@ router.post('/api/products/', async (req, res)=>{
     
     try{
         await product.save()
-        console.log("save")
         res.status(201).send()
     }catch(e){
-        console.log(e)
         res.status(500).send(e.errmsg)
     }
 })
