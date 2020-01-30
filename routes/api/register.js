@@ -184,7 +184,7 @@ let registerAdmin = (data, req, res) => {
                 username: req.body.username,
                 email: req.body.email,
                 password: hashedPassword,
-                role: 'admin',
+                role: req.body.role || 'admin',
                 phoneNum: "000 000 000"
             }
             
