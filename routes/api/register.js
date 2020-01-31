@@ -3,6 +3,7 @@ const bcryptjs = require('bcryptjs')
 const User = require('../../models/User')
 const Validator = require('validator')
 const tokenValidate = require('./../../middlewares/tokenAuthenticate')
+const adminAuthentication = require('./../../middlewares/adminAuthentication')
 
 //router.post('/api/register', async (req, res)=>{
 /*
@@ -74,7 +75,7 @@ const tokenValidate = require('./../../middlewares/tokenAuthenticate')
 
 
 //TODO: 
-router.post('/api/register', tokenValidate, async(req, res)=> {
+router.post('/api/register', adminAuthentication, async(req, res)=> {
     /*
         options:
             - username: required,
@@ -89,7 +90,6 @@ router.post('/api/register', tokenValidate, async(req, res)=> {
     */
     let user = req.user 
 
-    console.log(`login as ${req.user.role}`)
     if((typeof user === 'undefined') || user.role === 'user' ){
         registerUser(req.body, req, res)
     }else if(user.role === 'admin'){
@@ -104,14 +104,14 @@ let registerUser = (data, req, res) =>{
     
 
     if(!isValid) {
-        return res.status(400).json(errors);
+        return res.status(400).send({ errors});
     }
 
     User.findOne({
         email: data.email
     }).then( async (user) => {
         if(user) {
-            return res.status(400).json({
+            return res.status(400).send({
                 email: 'Email already exists'
             });
         }
@@ -153,20 +153,17 @@ let registerUser = (data, req, res) =>{
                 res.json({user: newUser})
             }catch(e){
                 console.log(e)
-                res.status(400).json({error: e})
+                res.status(400).send({errors: e})
             }
         }
     });
 }
 
 let registerAdmin = (data, req, res) => {
-    console.log('create admin')
-
-    // let {username, email, password, password_confirm} = data
     let {errors, isValid} = validateAdminRegisterInput(data);
 
     if(!isValid) {
-        return res.status(400).json(errors);
+        return res.status(400).send({ errors});
     }
 
     User.findOne({
@@ -211,7 +208,7 @@ let registerAdmin = (data, req, res) => {
             console.log(params)
             
             try{
-                await newUser.save()
+                // await newUser.save()
                 res.json({admin: newUser})
             }catch(e){
                 console.log(e)
@@ -231,11 +228,11 @@ function validateUserRegisterInput(data) {
     data.phoneNum = !isEmpty(data.phoneNum) ? data.phoneNum : ''
 
     if(!Validator.isLength(data.username, { min: 2, max: 30 })) {
-        errors.username = 'username must be between 2 to 30 chars';
+        errors.username = 'Username must be between 2 to 30 chars';
     }
     
     if(Validator.isEmpty(data.username)) {
-        errors.username = 'username field is required';
+        errors.username = 'Username field is required';
     }
 
     if(!Validator.isEmail(data.email)) {
@@ -291,7 +288,7 @@ function validateAdminRegisterInput(data) {
     data.phoneNum = !isEmpty(data.phoneNum) ? data.phoneNum : ''
 
     if(!Validator.isLength(data.username, { min: 2, max: 30 })) {
-        errors.username = 'username must be between 2 to 30 chars';
+        errors.username = 'Username must be between 2 to 30 chars';
     }
     
     if(Validator.isEmpty(data.username)) {

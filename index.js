@@ -8,9 +8,7 @@ const flash = require('express-flash')
 const session = require('express-session')
 
 const database = require('./config/database')
-const Product = require('./models/Product')
-const Order = require('./models/Order')
-const User = require('./models/User')
+const cors = require('cors')
 
 database.connect()
 
@@ -18,7 +16,11 @@ const app = express()
 const initializePassport = require('./config/passport-config')
 initializePassport(passport)
 
-
+var corsOptions = {
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200 
+}
+app.use(cors(corsOptions))
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))

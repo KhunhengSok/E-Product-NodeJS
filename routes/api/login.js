@@ -25,7 +25,7 @@ router.post('/api/login',  (req, res, next)=>{
     */
     const { errors, isValid } = validateLoginInput(req.body);
     if(!isValid) {
-        return res.status(400).json(errors);
+        return res.status(400).json({errors});
     }
 
     passport.authenticate('local', {session:false}, (err, user, info)=>{
@@ -34,7 +34,7 @@ router.post('/api/login',  (req, res, next)=>{
         }
         if(!user){
             errors.email = 'User not found'
-            return res.status(404).json(errors);
+            return res.status(404).json({errors});
         }
         req.login(user, {session:false}, (err)=>{
             if(err){

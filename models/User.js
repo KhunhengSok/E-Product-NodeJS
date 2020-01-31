@@ -19,7 +19,6 @@ let userSchema = mongoose.Schema({
     
     address: {
         type: String, 
-        required: true
     },
 
     image_link: String,
