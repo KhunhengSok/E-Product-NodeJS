@@ -14,7 +14,6 @@ const authenticateUser = async (email, password, done )=>{
     }
     
     try{
-        console.log(user.password)
 
         if( await bcryptJS.compare(password, user.password)){
             return done(null, user, {message: "Login"})

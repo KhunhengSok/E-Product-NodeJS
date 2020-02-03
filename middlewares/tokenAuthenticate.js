@@ -6,6 +6,8 @@ if(process.env.NODE_ENV !== 'production'){
 const tokenAuthenticate = (req, res, next)=>{
     //Get Token from header
     const token =  req.header('authentication');
+    console.log(req.header)
+    console.log(token)
     if(typeof token !== 'undefined'){
         try{
             let result = jwt.verify(token, process.env.SECRET_KEY)

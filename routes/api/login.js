@@ -42,7 +42,6 @@ router.post('/api/login',  (req, res, next)=>{
             }
 
             const token = jwt.sign({user}, process.env.SECRET_KEY, {expiresIn: process.env.EXPIRED_TIME})
-            console.log(`login as ${req.user.role}`)
             res.json({
                 user, 
                 token
