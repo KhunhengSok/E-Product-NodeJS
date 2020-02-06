@@ -3,6 +3,50 @@ const tokenAuthenticate = require('./../../middlewares/tokenAuthenticate')
 const Order = require('./../../models/Order')
 const Product = require('./../../models/Product')
 
+
+/**
+ * @swagger
+ * 
+ * tags:
+ *      - name : Order
+ *        description: Order details.
+ *      
+ * definitions:
+ *      Order:
+ *          type: object
+ *          required:
+ *              - products
+ *          properties:
+ *              order_datetime:
+ *                  type: string    
+ *                  format: date-time
+ *              user: 
+ *                  type: string
+ *                  descritpion: get via login.
+ *              products:
+ *                  type: array
+ *                  items:
+ *                      $ref: '#/components/schemas/Cart_Product'
+ *              delivery_status:
+ *                  type: boolean
+ * 
+ */
+
+
+/**
+ * @swagger
+ *      /api/order:
+ *          get:    
+ *              description: "Use to get all the order history for current, return latest order if admin is logined."
+ *              tags: 
+ *                  - Order
+ *              responses:
+ *                  '200': 
+ *                      description: Successfully operation. Return all availabel carts.*                  
+ *                      schema: 
+ *                          $ref: '#/definitions/Order'
+ * 
+ */
 router.get('/api/order', tokenAuthenticate, async  (req,res)=>{
     /*
         options:
@@ -55,6 +99,25 @@ router.get('/api/order', tokenAuthenticate, async  (req,res)=>{
     }
 })
 
+
+
+/**
+ * @swagger
+ *      /api/order:
+ *          post:
+ *              description: "Add new order by user."
+ *              tags: 
+ *                  - Order
+ *              parameters:
+ *                  - name : Products
+ *                    description: "Products to be ordered."
+ *                    type: array
+ *                    in: body
+ *                    required: true
+ *                    schema:
+ *                      $ref: '#/components/schemas/Cart_Product'
+ *  
+ */
 router.post('/api/order', tokenAuthenticate, async (req,res)=>{
     /*
         {
@@ -111,7 +174,6 @@ router.post('/api/order', tokenAuthenticate, async (req,res)=>{
 
                 }
 
-                console.log(price)
                 if( typeof price === 'undefined'){
                     if(e == null)
                         e = {}

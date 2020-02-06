@@ -10,6 +10,10 @@ const session = require('express-session')
 const database = require('./config/database')
 const cors = require('cors')
 
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('./swagger.json')
+const swaggerJsDoc = require('swagger-jsdoc')
+
 database.connect()
 
 const app = express()
@@ -41,6 +45,25 @@ app.use(require('./routes/api/order'))
 app.use(require('./routes/api/register'))
 app.use(require('./routes/api/me'))
 app.use(require('./routes/api/category'))
+app.use(require('./routes/api/Cart'))
+
+
+const swaggerOptions = {
+    swaggerDefinition:{
+        components: {},
+        info: {
+            title: "E-Product API",
+            descrition: "API for E-Product website.",
+            server: ["http://localhost:5000"]
+        }
+    },
+    apis: ["index.js", "./routes/api/*.js"]
+}
+
+let swaggerDoc = swaggerJsDoc(swaggerOptions)
+// app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
+
 
 const PORT = process.env.PORT || 3000 
 

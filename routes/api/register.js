@@ -2,8 +2,55 @@ const router = require('express').Router()
 const bcryptjs = require('bcryptjs')
 const User = require('../../models/User')
 const Validator = require('validator')
-const tokenValidate = require('./../../middlewares/tokenAuthenticate')
-const adminAuthentication = require('./../../middlewares/adminAuthentication')
+const testAuthenticate = require('./../../middlewares/testAuthenticate')
+
+
+/**
+ * @swagger
+ *
+ * tags:
+ *   - name: Register
+ *     description: Register new account for user.
+ *
+ * definitions:
+ *      User:
+ *        type: object
+ *        required:
+ *          - username
+ *          - email
+ *          - password
+ *          - role 
+ *          - phoneNum
+ *        properties:
+ *          _id: 
+ *            type: string
+ *          username:
+ *            type: string
+ *          email:
+ *            type: string
+ *          password:
+ *            type: string
+ *            format: password
+ *          role:
+ *            type: string
+ *            oneOf: 
+ *              - 'admin'
+ *              - 'user'
+ *            default: 'user'
+ *          phoneNum:
+ *            type: string
+ *          sex:
+ *            type: string
+ *            oneOf:
+ *              - male
+ *              - female
+ *          image_link:
+ *            type: string
+ *          address: 
+ *            type: string
+ *          
+ */
+
 
 //router.post('/api/register', async (req, res)=>{
 /*
@@ -75,20 +122,45 @@ const adminAuthentication = require('./../../middlewares/adminAuthentication')
 
 
 //TODO: 
-router.post('/api/register', adminAuthentication, async(req, res)=> {
+
+/**
+ * @swagger
+ *      /api/register:
+ *          post: 
+ *              description: "Use to register new user to the website."
+ *              tags: 
+ *                  - Register
+ *              parameters:
+ *                  - name: User
+ *                    in: body
+ *                    description: User information.
+ *                    type: object
+ *                    schema:
+ *                      $ref: '#/definitions/User'
+ *              responses :
+ *                  '200': 
+ *                      description: A new created user return. 
+ *                      schema: 
+ *                          $ref: '#/definitions/User'
+ *      
+ *                  '400': 
+ *                      description: Invalid info submitted. Return with specific error message.
+ *                  
+ */ 
+router.post('/api/register', testAuthenticate, async(req, res)=> {
     /*
         options:
             - username: required,
             - password: required,
             - email: required,
-            - password_comfirm: required,
+            - password_confirm: required,
             - phoneNum: required,
             - sex: optional,
             - address: optional,
             - image_link: String (optional),
             
     */
-    let user = req.user 
+    let user = req.user
 
     if((typeof user === 'undefined') || user.role === 'user' ){
         registerUser(req.body, req, res)
@@ -104,7 +176,7 @@ let registerUser = (data, req, res) =>{
     
 
     if(!isValid) {
-        return res.status(400).send({ errors});
+        return res.status(400).send({errors});
     }
 
     User.findOne({

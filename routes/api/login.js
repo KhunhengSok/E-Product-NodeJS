@@ -8,13 +8,90 @@ if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 } 
 
-// router.get('/api/login', tokenAuthenticate,  async(req, res)=>{
-//     let user = await req.user
-//     delete user.password
-//     res.send(user)
 
-// })
+/**
+ * @swagger
+ *
+ * tags:
+ *   - name: Login
+ *   - descirption: Log the user in.
+ *
+ * definitions:
+ *      User:
+ *        type: object
+ *        required:
+ *          - username
+ *          - email
+ *          - password
+ *          - role 
+ *          - phoneNum
+ *        properties:
+ *          _id: 
+ *            type: string
+ *          username:
+ *            type: string
+ *          email:
+ *            type: string
+ *          password:
+ *            type: string
+ *            format: password
+ *          role:
+ *            type: string
+ *            oneOf: 
+ *              - 'admin'
+ *              - 'user'
+ *            default: 'user'
+ *          phoneNum:
+ *            type: string
+ *          sex:
+ *            type: string
+ *            oneOf:
+ *              - male
+ *              - female
+ *          image_link:
+ *            type: string
+ *          address: 
+ *            type: string
+ *          
+ */
 
+
+
+
+
+/**
+ * @swagger
+ *      /api/login:
+ *          post: 
+ *              description: "Use to log in user to the website."
+ *              tags: 
+ *                  - Login
+ *              parameters:
+ *                  - name: User
+ *                    in: body
+ *                    description: User information.
+ *                    type: object
+ *                    example: 
+ *                      email: "string"
+ *                      password: "string"
+ *                      
+ *              responses :
+ *                  '200': 
+ *                      description: Successful login. Return with user information and token.
+ *                      content: 
+ *                          application/json:           
+ *                              schema:
+ *                                  type: object
+ *                                  properties:
+ *                                      user: 
+ *                                           
+ *                                              $ref: '#/definitions/User'
+ *                                      
+ *      
+ *                  '400': 
+ *                      description: Invalid info submitted. Return with specific error message.
+ *                  
+ */ 
 
 router.post('/api/login',  (req, res, next)=>{
     /*
